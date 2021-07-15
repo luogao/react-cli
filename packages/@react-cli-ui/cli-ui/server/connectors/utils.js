@@ -16,7 +16,7 @@ class StaticMethods {
   }
 
   /**
-   * Создание информационного объекта о папке
+   * 创建文件夹信息对象
    * @param {string} pathFolder - запрашиваемый путь
    * @param {string} namefolder - название директории
    */
@@ -27,8 +27,8 @@ class StaticMethods {
     if (exist) {
       const packageJsonFile = fs.readFileSync(packageJson, 'utf8')
       const packageJsonObj = JSON.parse(packageJsonFile)
-      if (get(packageJsonObj, 'dependencies.react')) {
-        folderItem.type = 'react'
+      if (get(packageJsonObj, 'dependencies.react-native')) {
+        folderItem.type = 'react-native'
       } else if (get(packageJsonObj, 'dependencies.vue')) {
         folderItem.type = 'vue'
       } else {

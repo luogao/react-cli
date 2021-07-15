@@ -7,7 +7,7 @@ import css from './style.module.less'
 
 export interface Folder {
   name: string;
-  type: 'react' | 'vue' | 'unknown' | 'empty';
+  type: 'react' | 'vue' | 'unknown' | 'empty' | 'react-native';
 }
 
 interface Props {

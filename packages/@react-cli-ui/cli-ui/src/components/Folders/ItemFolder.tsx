@@ -22,6 +22,8 @@ export default function ItemFolder ({ folder, select }: Props) {
 
   function renderProjectIcon () {
     switch (folder.type) {
+      case 'react-native':
+        return <ReactLogoIcon className={css.reactIcon} />
       case 'react':
         return <ReactLogoIcon className={css.reactIcon} />
       case 'vue':

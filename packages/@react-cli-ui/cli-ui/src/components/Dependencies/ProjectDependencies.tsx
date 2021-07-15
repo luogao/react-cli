@@ -18,7 +18,7 @@ interface PropsItem {
 
 interface PropsDepend {
   list: PropsItem[];
-  onDelete: (name: string) => void
+  onDelete: (name: string) => void;
 }
 
 export default function ProjectDependencies ({ list, onDelete }: PropsDepend) {
@@ -31,21 +31,33 @@ export default function ProjectDependencies ({ list, onDelete }: PropsDepend) {
 
   const renderListDepend = useMemo(() => {
     const renderItems = []
-    const listDepend = list.filter(p => p.type === 'dependencies')
-    if (listDepend.length) renderItems.push(<div key="main-deps" className={css.title}>{t('main')}</div>)
-    renderItems.push(listDepend.map(dep => (
-      <ProjectDependencyItem key={dep.id} delete={onDelete} {...dep} />
-    )))
+    const listDepend = list.filter((p) => p.type === 'dependencies')
+    if (listDepend.length) {
+      renderItems.push(
+        <div key="main-deps" className={css.title}>
+          {t('main')}
+        </div>
+      )
+    }
+    renderItems.push(
+      listDepend.map((dep) => <ProjectDependencyItem key={dep.id} delete={onDelete} {...dep} />)
+    )
     return renderItems
   }, [list])
 
   const renderListDevDepend = useMemo(() => {
     const renderItems = []
-    const listDevDepend = list.filter(p => p.type === 'devDependencies')
-    if (listDevDepend.length) renderItems.push(<div key="dev-deps" className={css.title}>{t('dev')}</div>)
-    renderItems.push(listDevDepend.map(dep => (
-      <ProjectDependencyItem key={dep.id} delete={onDelete} {...dep} />
-    )))
+    const listDevDepend = list.filter((p) => p.type === 'devDependencies')
+    if (listDevDepend.length) {
+      renderItems.push(
+        <div key="dev-deps" className={css.title}>
+          {t('dev')}
+        </div>
+      )
+    }
+    renderItems.push(
+      listDevDepend.map((dep) => <ProjectDependencyItem key={dep.id} delete={onDelete} {...dep} />)
+    )
     return renderItems
   }, [list])
 

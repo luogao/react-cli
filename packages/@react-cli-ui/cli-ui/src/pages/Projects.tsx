@@ -118,7 +118,7 @@ export default function Projects () {
         type: 'OPEN_PROJECT',
         id
       })
-      const project = projects.find(project => project.id === id)
+      const project = projects.find((project) => project.id === id)
       changeSelectedPath(project.path)
       history.push(Routes.DASHBOARD)
     }
@@ -162,7 +162,7 @@ export default function Projects () {
 
   function handleChange (event: React.ChangeEvent<HTMLInputElement>) {
     const searchValue = event.target.value
-    const filter = projects.filter(project => project.name.indexOf(searchValue) !== -1)
+    const filter = projects.filter((project) => project.name.indexOf(searchValue) !== -1)
     setFilters(filter)
   }
 
@@ -179,9 +179,9 @@ export default function Projects () {
   return (
     <Layout>
       <Content>
-        { projects.length ? <ProjectFilter onChange={handleChange} /> : null}
-        { filters.length
-          ? <ProjectList
+        {projects.length ? <ProjectFilter onChange={handleChange} /> : null}
+        {filters.length ? (
+          <ProjectList
             tasks={tasks}
             onTask={handleListTasks}
             active={active}
@@ -192,7 +192,9 @@ export default function Projects () {
             onFavorite={handleFavorite}
             onDelete={handleDelete}
           />
-          : <Empty text={t('notFoundProjects')} /> }
+        ) : (
+          <Empty text={t('notFoundProjects')} />
+        )}
       </Content>
     </Layout>
   )

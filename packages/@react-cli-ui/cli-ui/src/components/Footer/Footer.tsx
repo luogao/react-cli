@@ -28,9 +28,7 @@ export default function Footer () {
   }, [location])
 
   function renderThemeIcon () {
-    return darkTheme
-      ? <LightIcon onClick={changeTheme} />
-      : <DarkIcon onClick={changeTheme} />
+    return darkTheme ? <LightIcon onClick={changeTheme} /> : <DarkIcon onClick={changeTheme} />
   }
 
   function handleClick () {
@@ -44,26 +42,24 @@ export default function Footer () {
 
   return (
     <div className={styles}>
-      { toggleLog && (
-        <Logs />
-      )}
+      {toggleLog && <Logs />}
       <div className={css.content}>
-        <Link to={toggle === 'project'
-          ? Routes.DASHBOARD
-          : Routes.PROJECT } onClick={handleClick} className={css.icon}>
+        <Link
+          to={toggle === 'project' ? Routes.DASHBOARD : Routes.PROJECT}
+          onClick={handleClick}
+          className={css.icon}
+        >
           <HomeIcon />
         </Link>
-        {selectedPath && (
-          <CurrentPath theme={darkTheme} url={selectedPath}/>
-        )}
+        {selectedPath && <CurrentPath theme={darkTheme} url={selectedPath} />}
         <div className={css.log} onClick={handleToggleLog}>
-          <div className={css.iconLog}><ComputerIcon /></div>
-          🌠  {`Ready on http://localhost: ${process.env.DEV_CLIENT_PORT ?? 8080}`}
+          <div className={css.iconLog}>
+            <ComputerIcon />
+          </div>
+          🌠 {`Ready on http://localhost: ${process.env.DEV_CLIENT_PORT ?? 8080}`}
         </div>
         <div className={css.rightGroup}>
-          <div className={css.icon}>
-            {renderThemeIcon()}
-          </div>
+          <div className={css.icon}>{renderThemeIcon()}</div>
           <div className={css.icon}>
             <TranlateIcon onClick={changeLocale} />
           </div>

@@ -1,9 +1,10 @@
-.wrapper{
+.wrapper {
   height: 100%;
   width: 100%;
   background: #61dafb3f;
-  overflow: auto;
-
+  display: flex;
+  flex-direction: column;
+  flex:1;
   &.dark {
     .top {
       .title {
@@ -25,7 +26,7 @@
   height: 32px;
   z-index: 1;
   background: #61dafb3f;
-
+  flex-shrink: 0;
   .title {
     font-size: 26px;
     font-weight: lighter;
@@ -51,12 +52,16 @@
 
 .content {
   padding: 35px;
+  flex: 1;
+  flex-wrap: wrap;
+  overflow: auto;
+  display: flex;
 }
 
 @media screen and (max-width: 951px) {
-  .wrapper{
+  .wrapper {
     left: 70px;
-    overflow:auto;
+    overflow: auto;
   }
 
   .content {

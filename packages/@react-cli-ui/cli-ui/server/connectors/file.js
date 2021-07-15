@@ -21,11 +21,11 @@ class FileApi extends StaticMethods {
       (fileName, errorMsg) => {
         console.error(`Unable to open '${fileName}'`, errorMsg)
         this.client.emit('erro', {
-          title: 'Ошибка работы с файловой системой',
+          title: '文件系统错误',
           message: errorMsg
         })
         this.logs.add({
-          message: 'Ошибка работы с файловой системой',
+          message: '文件系统错误',
           type: 'info'
         })
       })

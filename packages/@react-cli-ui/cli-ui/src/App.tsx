@@ -3,6 +3,7 @@ import { BrowserRouter as Router } from 'react-router-dom'
 import { I18nextProvider } from 'react-i18next'
 import ReactNotification from 'react-notifications-component'
 import cn from 'classnames'
+import { Provider } from 'react-redux'
 
 import i18n from './i18n'
 import { Footer, ConnectionStatus } from '@components'
@@ -11,6 +12,7 @@ import { SettingsContext } from '@context'
 import { renderRoutes } from './router'
 
 import css from '@styles/main.module.less'
+import { store } from 'store'
 
 export default function App () {
   const settings = useSettings()
@@ -19,17 +21,19 @@ export default function App () {
   })
 
   return (
-    <I18nextProvider i18n={i18n}>
-      <SettingsContext.Provider value={settings}>
-        <Router>
-          <div className={styles}>
-            <ConnectionStatus />
-            {renderRoutes()}
-            <Footer />
-            <ReactNotification />
-          </div>
-        </Router>
-      </SettingsContext.Provider>
-    </I18nextProvider>
+    <Provider store={store}>
+      <I18nextProvider i18n={i18n}>
+        <SettingsContext.Provider value={settings}>
+          <Router>
+            <div className={styles}>
+              <ConnectionStatus />
+              {renderRoutes()}
+              <Footer />
+              <ReactNotification />
+            </div>
+          </Router>
+        </SettingsContext.Provider>
+      </I18nextProvider>
+    </Provider>
   )
 }

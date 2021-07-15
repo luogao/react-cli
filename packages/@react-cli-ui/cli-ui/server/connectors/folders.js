@@ -43,11 +43,11 @@ class FolderApi extends StaticMethods {
       fs.readdir(data.folder, (err, files) => {
         if (err) {
           this.client.emit('erro', {
-            message: 'Ошибка работы с файловой системой',
+            message: '文件系统错误',
             error: err
           })
           this.logs.add({
-            message: 'Ошибка работы с файловой системой',
+            message: '文件系统错误',
             type: 'info'
           })
         }
@@ -72,7 +72,7 @@ class FolderApi extends StaticMethods {
       })
     } catch (error) {
       this.client.emit('erro', {
-        message: 'Что-то пошло не так, попробуйте снова',
+        message: '出了点问题，请重试',
         error
       })
     }
@@ -105,7 +105,7 @@ class FolderApi extends StaticMethods {
       }
     } catch (error) {
       this.client.emit('erro', {
-        message: 'Что-то пошло не так, попробуйте снова',
+        message: '出了点问题，请重试',
         error
       })
     }
