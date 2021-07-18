@@ -230,7 +230,7 @@ class ProjectApi extends StaticMethods {
         type: this.checkFramework(pathProjectUrl).type,
       };
       const packageData = this.folder.readPackage(path.join(pathProjectUrl));
-      project.name = packageData.name;
+      project.name = packageData.name || path.parse(pathProjectUrl).name;
       this.db.get('projects').push(project).write();
       this.open(project.id);
       this.client.emit('notification', {

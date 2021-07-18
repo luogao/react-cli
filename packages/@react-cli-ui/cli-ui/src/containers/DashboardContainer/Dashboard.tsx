@@ -1,23 +1,23 @@
-import React, { useState, useEffect, useMemo, useContext } from 'react'
-import { unstable_batchedUpdates as batch } from 'react-dom'
-import { useTranslation } from 'react-i18next'
-import { NavLink } from 'react-router-dom'
-import ReactTooltip from 'react-tooltip'
-import { v4 as uuid } from 'uuid'
+import React, { useState, useEffect, useMemo, useContext } from 'react';
+import { unstable_batchedUpdates as batch } from 'react-dom';
+import { useTranslation } from 'react-i18next';
+import { NavLink } from 'react-router-dom';
+import ReactTooltip from 'react-tooltip';
+import { v4 as uuid } from 'uuid';
 
-import { Routes } from 'router'
-import { useNotification } from '@hooks'
-import { DropdownProject } from '@components'
-import { SettingsContext } from '@context'
-import DashboardIcon from '@icons/dashboard-project.svg'
-import ActiveIcon from '@icons/dashboard-tasks.svg'
-import StatsIcon from '@icons/dashboard-config.svg'
+import { Routes } from 'router';
+import { useNotification } from '@hooks';
+import { DropdownProject } from '@components';
+import { SettingsContext } from '@context';
+import DashboardIcon from '@icons/dashboard-project.svg';
+import ActiveIcon from '@icons/dashboard-tasks.svg';
+import StatsIcon from '@icons/dashboard-config.svg';
 
-import useDashboardContainer, { MenuItems } from './dashboardContainer.hook'
+import useDashboardContainer, { MenuItems } from './dashboardContainer.hook';
 
-import css from './style.module.less'
+import css from './style.module.less';
 
-const TOOLTIP_ID = uuid()
+const TOOLTIP_ID = uuid();
 
 export type Project = {
   id: string;
@@ -28,128 +28,144 @@ export type Project = {
   name: string;
   path: string[];
   type: string;
-}
+};
 
-export default function Dashboard () {
-  const { t } = useTranslation('dashboard')
-  const { locale, activeTab } = useDashboardContainer()
-  const notification = useNotification()
-  const { socket, selectedPath, changeSelectedPath } = useContext(SettingsContext)
+export default function Dashboard() {
+  const { t } = useTranslation('dashboard');
+  const { locale, activeTab } = useDashboardContainer();
+  const notification = useNotification();
+  const { socket, selectedPath, changeSelectedPath } = useContext(SettingsContext);
 
-  const [projects, setProjects] = useState<Project[]>([])
-  const [filterProjects, setFilterProjects] = useState<Project[]>([])
-  const [active, setActive] = useState<string>('')
-  const [title, setTitle] = useState<string>('')
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [filterProjects, setFilterProjects] = useState<Project[]>([]);
+  const [active, setActive] = useState<string>('');
+  const [title, setTitle] = useState<string>('');
 
   useEffect(() => {
     socket.send({
-      type: 'GET_CONFIG'
-    })
+      type: 'GET_CONFIG',
+    });
 
     socket.send({
-      type: 'GET_PROJECTS'
-    })
+      type: 'GET_PROJECTS',
+    });
 
     socket.on('config', (res: any) => {
-      setActive(res.data?.lastOpenProject || null)
-    })
+      console.log(res);
+      
+      setActive(res.data?.lastOpenProject || null);
+    });
 
     socket.on('projects', (res: any) => {
-      setProjects(res.data)
-    })
+      setProjects(res.data);
+    });
 
     socket.on('erro', (error: any) => {
       notification.error({
         title: error.message,
-        message: error.error.path
-      })
-    })
+        message: error.error.path,
+      });
+    });
 
     return () => {
-      socket.off('config')
-      socket.off('projects')
-      socket.off('erro')
-    }
-  }, [])
+      socket.off('config');
+      socket.off('projects');
+      socket.off('erro');
+    };
+  }, []);
 
   useEffect(() => {
     if (active) {
-      const title: any = !!projects.length && projects.find(p => p.id === active)
-      const filterFavorite = (project: Project) => project.favorite === true
-      const filterName = (project: Project) => project.name !== title.name
-      const filterProjects = projects.length ? [...projects].filter(filterName).filter(filterFavorite) : []
+      console.log({ projects });
+      console.log({ active });
+
+      const currentProject: any = !!projects.length && projects.find((p) => p.id === active);
+      console.log({currentProject});
+      
+      const filterFavorite = (project: Project) => project.favorite === true;
+      const filterName = (project: Project) => project.name !== currentProject.name;
+      const filterProjects = projects.length
+        ? [...projects].filter(filterName).filter(filterFavorite)
+        : [];
       batch(() => {
-        setTitle(title ? title.name : '')
-        setFilterProjects(filterProjects)
-      })
+        setTitle(currentProject ? currentProject.name : '');
+        setFilterProjects(filterProjects);
+      });
     }
-  }, [active, projects])
+  }, [active, projects]);
 
   const menu: MenuItems[] = [
     { key: Routes.DASHBOARD, label: t('dashboard'), Icon: DashboardIcon },
     { key: Routes.DEPENDENCIES, label: t('dependencies'), Icon: StatsIcon },
     { key: Routes.DASHBOARD_TASKS_START, label: t('tasks'), Icon: ActiveIcon },
     { key: Routes.ASSET_MANAGEMENT, label: '资源文件管理', Icon: ActiveIcon },
-  ]
+  ];
 
-  function handleOpen (id: string, path: string[]) {
+  function handleOpen(id: string, path: string[]) {
     if (id) {
       socket.send({
         type: 'OPEN_PROJECT',
-        id
-      })
-      changeSelectedPath(path)
-      setActive(id)
+        id,
+      });
+      changeSelectedPath(path);
+      setActive(id);
     }
   }
 
-  function handleOpenEdit () {
+  function handleOpenEdit() {
     socket.send({
       type: 'OPEN_EDIT_FILE',
-      path: selectedPath
-    })
+      path: selectedPath,
+    });
   }
 
-  const renderChildren = useMemo(() => menu.map(({ key, label, Icon }: MenuItems) => {
-    return (
-      <NavLink
-        key={key}
-        to={key}
-        exact={true}
-        activeClassName={css.active}
-        data-tip={`<div class="${css.tooltip}">${label}</div>`}
-        data-for={TOOLTIP_ID}
-        isActive={(_, location) => {
-          if (key === Routes.DASHBOARD_TASKS_START &&
-            Routes.DASHBOARD_TASKS_BUILD === location.pathname
-          ) {
-            return true
-          }
+  const renderChildren = useMemo(
+    () =>
+      menu.map(({ key, label, Icon }: MenuItems) => {
+        return (
+          <NavLink
+            key={key}
+            to={key}
+            exact={true}
+            activeClassName={css.active}
+            data-tip={`<div class="${css.tooltip}">${label}</div>`}
+            data-for={TOOLTIP_ID}
+            isActive={(_, location) => {
+              if (
+                key === Routes.DASHBOARD_TASKS_START &&
+                Routes.DASHBOARD_TASKS_BUILD === location.pathname
+              ) {
+                return true;
+              }
 
-          if (key === Routes.DASHBOARD_TASKS_START &&
-            Routes.DASHBOARD_TASKS_TEST === location.pathname
-          ) {
-            return true
-          }
+              if (
+                key === Routes.DASHBOARD_TASKS_START &&
+                Routes.DASHBOARD_TASKS_TEST === location.pathname
+              ) {
+                return true;
+              }
 
-          if (key === Routes.DASHBOARD_TASKS_START &&
-            Routes.DASHBOARD_TASKS_EJECT === location.pathname
-          ) {
-            return true
-          }
+              if (
+                key === Routes.DASHBOARD_TASKS_START &&
+                Routes.DASHBOARD_TASKS_EJECT === location.pathname
+              ) {
+                return true;
+              }
 
-          if (key === location.pathname) {
-            return true
-          }
+              if (key === location.pathname) {
+                return true;
+              }
 
-          return false
-        }}
-      >
-        <Icon />
-        <span className={css.disableTitle}>{ label }</span>
-      </NavLink>
-    )
-  }), [activeTab, locale])
+              return false;
+            }}
+          >
+            <Icon />
+            <span className={css.disableTitle}>{label}</span>
+          </NavLink>
+        );
+      }),
+    [activeTab, locale],
+  );
 
   return (
     <div className={css.wrapperHeader}>
@@ -160,9 +176,7 @@ export default function Dashboard () {
           openEdit={handleOpenEdit}
           edit={handleOpen}
         />
-        <div className={css.nav}>
-          {renderChildren}
-        </div>
+        <div className={css.nav}>{renderChildren}</div>
       </div>
       <ReactTooltip
         id={TOOLTIP_ID}
@@ -173,5 +187,5 @@ export default function Dashboard () {
         html
       />
     </div>
-  )
+  );
 }
