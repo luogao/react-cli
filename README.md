@@ -33,5 +33,16 @@ Please make sure to update tests as appropriate.
 
 Thank you to all the people who already contributed to React CLI!
 
+use lerna to steup this project, if you don't have lerna installed, please [install it](https://www.lernajs.cn/#getting-started) first
+- step one 
+    ```bash
+    lerna bootstrap
+    ```
+
+- step two
+    ```bash
+    yarn dev
+    ```
+
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
