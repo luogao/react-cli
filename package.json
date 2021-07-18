@@ -9,7 +9,8 @@
     "release": "node scripts/release.js",
     "version": "node scripts/genChangelog.js",
     "update:version": "lerna version --no-push",
-    "new-version": "lerna version --conventional-commits --yes"
+    "new-version": "lerna version --conventional-commits --yes",
+    "dev": "lerna run dev --stream"
   },
   "repository": {
     "type": "git",
