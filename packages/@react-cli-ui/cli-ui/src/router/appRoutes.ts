@@ -24,6 +24,7 @@ export enum Routes {
   PROJECT_CREATE = '/project/create',
   PROJECT_IMPORT = '/project/import',
   NOT_FOUND = '/404',
+  ASSET_MANAGEMENT = '/asset-management'
 }
 
 export interface RouteEntity {

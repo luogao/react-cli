@@ -40,12 +40,14 @@ export default function Footer() {
     setToggleLog(!toggleLog);
   }
 
+  const isProjectPath = toggle === 'project';
+
   return (
     <div className={styles}>
       {toggleLog && <Logs />}
       <div className={css.content}>
         <Link
-          to={toggle === 'project' ? Routes.DASHBOARD : Routes.PROJECT}
+          to={isProjectPath ? Routes.DASHBOARD : Routes.PROJECT}
           onClick={handleClick}
           className={css.icon}
         >

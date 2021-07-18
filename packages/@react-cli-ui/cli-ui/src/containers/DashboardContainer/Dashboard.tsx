@@ -88,7 +88,8 @@ export default function Dashboard () {
   const menu: MenuItems[] = [
     { key: Routes.DASHBOARD, label: t('dashboard'), Icon: DashboardIcon },
     { key: Routes.DEPENDENCIES, label: t('dependencies'), Icon: StatsIcon },
-    { key: Routes.DASHBOARD_TASKS_START, label: t('tasks'), Icon: ActiveIcon }
+    { key: Routes.DASHBOARD_TASKS_START, label: t('tasks'), Icon: ActiveIcon },
+    { key: Routes.ASSET_MANAGEMENT, label: '资源文件管理', Icon: ActiveIcon },
   ]
 
   function handleOpen (id: string, path: string[]) {

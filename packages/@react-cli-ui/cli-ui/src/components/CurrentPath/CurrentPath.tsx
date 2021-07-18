@@ -16,7 +16,7 @@ export default function CurrentPath ({ url, theme }: Props) {
   })
 
   return (
-    <div className={styles}>
+    <div className={styles} data-tip='当前所在项目路径'>
       <div className={css.icon}>
         <FolderIcon />
       </div>

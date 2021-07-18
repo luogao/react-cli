@@ -31,11 +31,13 @@
     "node": ">=8.9"
   },
   "dependencies": {
+    "@types/lodash.isequal": "^4.5.5",
     "chalk": "^4.0.0",
     "commander": "^5.1.0",
     "execa": "^4.0.2",
     "fkill": "^7.0.1",
     "inquirer": "^7.1.0",
+    "lodash.isequal": "^4.5.0",
     "open": "^7.0.4",
     "semver": "^7.3.2"
   }
