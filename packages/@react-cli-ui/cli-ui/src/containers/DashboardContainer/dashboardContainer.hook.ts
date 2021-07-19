@@ -5,7 +5,7 @@ import { Routes } from 'router'
 import { SettingsContext } from '@context'
 
 export interface MenuItems {
-  key: Routes.DASHBOARD | Routes.DASHBOARD_TASKS_START | Routes.DEPENDENCIES | Routes.ASSET_MANAGEMENT;
+  key: Routes.DASHBOARD | Routes.DEPENDENCIES | Routes.ASSET_MANAGEMENT | Routes.DASHBOARD_TASKS;
   label: string;
   Icon: React.FC;
 }
@@ -13,7 +13,7 @@ export interface MenuItems {
 interface HookProps {
   locale: string | null;
   activeTab: string;
-  handleSetTab(menuItem: MenuItems): void;
+  handleSetTab (menuItem: MenuItems): void;
 }
 export default function useDashboardContainer (): HookProps {
   // Router

@@ -5,16 +5,17 @@ import { Routes } from 'router'
 import { SettingsContext } from 'context'
 
 export interface TabItem {
-    key: Routes.PROJECT | Routes.PROJECT_SELECT | Routes.DASHBOARD_TASKS_START;
-    name: string;
-    label: string;
-    Icon: React.FC;
+  key: Routes.PROJECT | Routes.PROJECT_SELECT
+  name: string;
+  label: string;
+  query: string;
+  Icon: React.FC;
 }
 
 interface HookProps {
   locale: string | null;
   activeTab: string;
-  handleSetTab(menuItem: TabItem): void;
+  handleSetTab (menuItem: TabItem): void;
 }
 export default function useTaskContainer (): HookProps {
   // Router

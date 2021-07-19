@@ -23,19 +23,6 @@ export interface ProjectProps {
   favorite: boolean;
 }
 
-function getKey (key: string) {
-  if (key === 'start') {
-    return Routes.DASHBOARD_TASKS_START
-  } else if (key === 'build') {
-    return Routes.DASHBOARD_TASKS_BUILD
-  } else if (key === 'test') {
-    return Routes.DASHBOARD_TASKS_TEST
-  } else if (key === 'eject') {
-    return Routes.DASHBOARD_TASKS_EJECT
-  } else {
-    return Routes.DASHBOARD_TASKS
-  }
-}
 
 function getIcon (key: string) {
   if (key === 'start') {
@@ -87,7 +74,7 @@ export default function Projects () {
       const data = Object.entries(res.data)
       const list = []
       for (const [key, value] of data) {
-        list.push({ name: key, label: value, key: getKey(key), Icon: getIcon(key) })
+        list.push({ name: key, label: value, key: key, Icon: getIcon(key) })
       }
       setTask(list)
     })

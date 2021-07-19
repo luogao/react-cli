@@ -6,23 +6,18 @@ import {
   PageNotFound,
   Dashboard,
   CreateProject,
-  Tasks
 } from '@pages'
 
 /** Url's основных страниц */
 export enum Routes {
   MAIN = '/',
   PROJECT = '/project',
-  DASHBOARD = '/dashboard',
-  DASHBOARD_TASKS = '/dashboard/tasks',
-  DEPENDENCIES = '/dashboard/dependencies',
-  DASHBOARD_TASKS_START = '/dashboard/tasks/start',
-  DASHBOARD_TASKS_BUILD = '/dashboard/tasks/build',
-  DASHBOARD_TASKS_TEST = '/dashboard/tasks/test',
-  DASHBOARD_TASKS_EJECT = '/dashboard/tasks/eject',
   PROJECT_SELECT = '/project/select',
   PROJECT_CREATE = '/project/create',
   PROJECT_IMPORT = '/project/import',
+  DASHBOARD = '/dashboard',
+  DASHBOARD_TASKS = '/tasks',
+  DEPENDENCIES = '/dependencies',
   NOT_FOUND = '/404',
   ASSET_MANAGEMENT = '/asset-management'
 }
@@ -31,14 +26,14 @@ export interface RouteEntity {
   Component: React.FC<React.ReactNode>;
   paths: {
     root: string;
-    [key: string]: string | RouteEntity;
+    [ key: string ]: string | RouteEntity;
   };
   isRowDirection?: boolean;
   exact?: boolean;
 }
 
 type RoutesCollection = {
-  [key: string]: RouteEntity;
+  [ key: string ]: RouteEntity;
 };
 
 export const AppRoutes: RoutesCollection = {
@@ -87,59 +82,34 @@ export const AppRoutes: RoutesCollection = {
   dashboard: {
     paths: {
       root: Routes.DASHBOARD,
-      project: {
-        paths: {
-          root: Routes.DASHBOARD
-        },
-        exact: true,
-        Component: Dashboard
-      },
-      dashboardStats: {
-        paths: {
-          root: Routes.DEPENDENCIES
-        },
-        exact: true,
-        Component: Dependencies
-      },
-      dashboardTasks: {
-        paths: {
-          root: Routes.DASHBOARD_TASKS,
-          tastStart: {
-            paths: {
-              root: Routes.DASHBOARD_TASKS_START
-            },
-            exact: true,
-            Component: Tasks
-          },
-          tastBuild: {
-            paths: {
-              root: Routes.DASHBOARD_TASKS_BUILD
-            },
-            exact: true,
-            Component: Tasks
-          },
-          tastTest: {
-            paths: {
-              root: Routes.DASHBOARD_TASKS_TEST
-            },
-            exact: true,
-            Component: Tasks
-          },
-          tastEject: {
-            paths: {
-              root: Routes.DASHBOARD_TASKS_EJECT
-            },
-            exact: true,
-            Component: Tasks
-          }
-        },
-        exact: false,
-        Component: TaskContainer
-      }
     },
     isRowDirection: true,
-    exact: false,
-    Component: DashboardContainer
+    exact: true,
+    Component: Dashboard,
+  },
+  dashboardStats: {
+    paths: {
+      root: Routes.DEPENDENCIES
+    },
+    exact: true,
+    isRowDirection: true,
+    Component: Dependencies
+  },
+  tasks: {
+    paths: {
+      root: `${Routes.DASHBOARD_TASKS}`,
+    },
+    exact: true,
+    isRowDirection: true,
+    Component: TaskContainer
+  },
+  tasksAction: {
+    paths: {
+      root: `${Routes.DASHBOARD_TASKS}/:taskName`,
+    },
+    exact: true,
+    isRowDirection: true,
+    Component: TaskContainer
   },
   notFound: {
     paths: {

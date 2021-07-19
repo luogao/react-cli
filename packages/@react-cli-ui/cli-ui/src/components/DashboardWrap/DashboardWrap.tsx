@@ -1,22 +1,29 @@
-import React, { useContext } from 'react'
-import cn from 'classnames'
+import React, { useContext } from 'react';
+import cn from 'classnames';
 
-import { SettingsContext } from '@context'
+import { SettingsContext } from '@context';
 
-import css from './style.module.less'
+import css from './style.module.less';
 
 interface DashboardProps {
   title?: string;
   children: React.PropsWithChildren<React.ReactNode>;
   btn?: JSX.Element;
   cssStyle?: React.CSSProperties;
+  fullContent?: boolean;
 }
 
-export default function DashboardWrap ({ children, title, btn, cssStyle }: DashboardProps) {
-  const { darkTheme } = useContext(SettingsContext)
+export default function DashboardWrap({
+  children,
+  title,
+  btn,
+  cssStyle,
+  fullContent,
+}: DashboardProps) {
+  const { darkTheme } = useContext(SettingsContext);
   const styles = cn(css.wrapper, {
-    [css.dark]: darkTheme
-  })
+    [css.dark]: darkTheme,
+  });
 
   return (
     <div className={styles} style={cssStyle}>
@@ -24,7 +31,9 @@ export default function DashboardWrap ({ children, title, btn, cssStyle }: Dashb
         <div className={css.title}>{title}</div>
         <div className={css.rightGroup}>{btn}</div>
       </div>
-      <div className={css.content}>{children}</div>
+      <div className={css.content} style={{ padding: fullContent ? 0 : 35 }}>
+        {children}
+      </div>
     </div>
-  )
+  );
 }

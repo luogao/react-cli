@@ -52,7 +52,7 @@ export default function Dashboard() {
 
     socket.on('config', (res: any) => {
       console.log(res);
-      
+
       setActive(res.data?.lastOpenProject || null);
     });
 
@@ -80,8 +80,8 @@ export default function Dashboard() {
       console.log({ active });
 
       const currentProject: any = !!projects.length && projects.find((p) => p.id === active);
-      console.log({currentProject});
-      
+      console.log({ currentProject });
+
       const filterFavorite = (project: Project) => project.favorite === true;
       const filterName = (project: Project) => project.name !== currentProject.name;
       const filterProjects = projects.length
@@ -97,7 +97,7 @@ export default function Dashboard() {
   const menu: MenuItems[] = [
     { key: Routes.DASHBOARD, label: t('dashboard'), Icon: DashboardIcon },
     { key: Routes.DEPENDENCIES, label: t('dependencies'), Icon: StatsIcon },
-    { key: Routes.DASHBOARD_TASKS_START, label: t('tasks'), Icon: ActiveIcon },
+    { key: Routes.DASHBOARD_TASKS, label: t('tasks'), Icon: ActiveIcon },
     { key: Routes.ASSET_MANAGEMENT, label: '资源文件管理', Icon: ActiveIcon },
   ];
 
@@ -126,38 +126,10 @@ export default function Dashboard() {
           <NavLink
             key={key}
             to={key}
-            exact={true}
+            exact={false}
             activeClassName={css.active}
             data-tip={`<div class="${css.tooltip}">${label}</div>`}
             data-for={TOOLTIP_ID}
-            isActive={(_, location) => {
-              if (
-                key === Routes.DASHBOARD_TASKS_START &&
-                Routes.DASHBOARD_TASKS_BUILD === location.pathname
-              ) {
-                return true;
-              }
-
-              if (
-                key === Routes.DASHBOARD_TASKS_START &&
-                Routes.DASHBOARD_TASKS_TEST === location.pathname
-              ) {
-                return true;
-              }
-
-              if (
-                key === Routes.DASHBOARD_TASKS_START &&
-                Routes.DASHBOARD_TASKS_EJECT === location.pathname
-              ) {
-                return true;
-              }
-
-              if (key === location.pathname) {
-                return true;
-              }
-
-              return false;
-            }}
           >
             <Icon />
             <span className={css.disableTitle}>{label}</span>
@@ -182,7 +154,7 @@ export default function Dashboard() {
         id={TOOLTIP_ID}
         place="right"
         effect="solid"
-        delayShow={1000}
+        delayShow={300}
         offset={{ left: 30 }}
         html
       />
