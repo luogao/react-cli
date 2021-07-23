@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useContext, useMemo } from 'react';
+import React, { useState, useEffect, useContext, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useRouteMatch } from 'react-router-dom';
 import cn from 'classnames';
 import { SettingsContext } from '@context';
-import { DashboardWrap } from '@components';
+import { DashboardWrap, TaskTerminal } from '@components';
 import ProjectIcon from '@icons/nav-projects.svg';
 
 import useTaskContainer, { TabItem } from './taskContainer.hook';
@@ -11,15 +11,16 @@ import css from './style.module.less';
 import ReactTooltip from 'react-tooltip';
 
 import { v4 as uuid } from 'uuid';
+import { TaskItem } from './types';
 
 const tooltipId = uuid();
 export default function TaskContainer() {
   const match = useRouteMatch<{ taskName?: string }>();
   const currentTaskName = match.params.taskName;
-  console.log({ currentTaskName, match });
   const { t } = useTranslation('dashboard');
   const { locale, activeTab } = useTaskContainer();
   const { socket, darkTheme } = useContext(SettingsContext);
+  const taskTerminal = useRef<TaskTerminal>();
 
   // State
   const [tasks, setTask] = useState<any[]>([]);
@@ -33,12 +34,14 @@ export default function TaskContainer() {
     });
 
     socket.on('tasks', (res: any) => {
-      const data = Object.entries(res.data);
-      const list = [];
-      for (const [key, value] of data) {
-        list.push({ name: key, label: value, key, Icon: ProjectIcon });
-      }
+      console.log({res})
+      const list = res.data;
       setTask(list);
+    });
+
+    socket.on('taskLogAdd', ({ data }: { data: any }) => {
+      console.log(data);
+      taskTerminal.current && taskTerminal.current.addLog(data);
     });
 
     return () => {
@@ -49,13 +52,13 @@ export default function TaskContainer() {
   const renderTaskItemList = useMemo(
     () => (
       <div className={css.taskListWrapper}>
-        {tasks.map(({ key, label, name }: TabItem) => {
+        {tasks.map(({ id, command, name }: TaskItem) => {
           return (
-            <div data-tip={label} key={key} data-for={tooltipId}>
-              <NavLink exact={true} to={`/tasks/${key}`} activeClassName={css.active}>
+            <div data-tip={command} key={id} data-for={tooltipId}>
+              <NavLink exact={true} to={`/tasks/${name}`} activeClassName={css.active}>
                 <div className={css.taskElement}>
                   <span className={css.name}>{name}</span>
-                  <span className={css.value}> {label}</span>
+                  <span className={css.value}> {command} </span>
                 </div>
               </NavLink>
             </div>
@@ -75,8 +78,30 @@ export default function TaskContainer() {
     );
   }
 
+  function handleRunTask() {
+    console.log({ currentTaskName });
+    socket.send({
+      type: 'RUN_TASK',
+      name: currentTaskName,
+    });
+  }
+
+  function renderTaskControl() {
+    return (
+      <div className={css.taskControlWrapper}>
+        <button onClick={handleRunTask}>运行</button>
+      </div>
+    );
+  }
+
   function renderTaskContent() {
-    return <div className={css.taskContentWrapper}>{currentTaskName}</div>;
+    if (!currentTaskName) return null;
+    return (
+      <div className={css.taskContentWrapper}>
+        {renderTaskControl()}
+        <TaskTerminal ref={taskTerminal} />
+      </div>
+    );
   }
 
   return (

@@ -50,7 +50,7 @@ module.exports = {
 
   resolve: {
     modules: [paths.appNodeModules, paths.appSrc, 'node_modules'],
-    extensions: ['.js', '.jsx', '.ts', '.tsx', '.json', '.png', '.less'],
+    extensions: ['.js', '.jsx', '.ts', '.tsx', '.json', '.png', '.less', '.css'],
     alias: {
       '@components': paths.appComponents,
       '@context': paths.appContext,

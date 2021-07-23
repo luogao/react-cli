@@ -60,10 +60,11 @@ export default function Dashboard() {
       setProjects(res.data);
     });
 
-    socket.on('erro', (error: any) => {
+    socket.on('erro', (error = { title: '未知错误', message: '请打开控制台查看' }) => {
+      console.log({ error });
       notification.error({
-        title: error.message,
-        message: error.error.path,
+        title: error.title || '',
+        message: error.message || '',
       });
     });
 

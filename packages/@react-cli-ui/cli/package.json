@@ -42,6 +42,8 @@
     "inquirer": "^7.1.0",
     "lodash.isequal": "^4.5.0",
     "open": "^7.0.4",
-    "semver": "^7.3.2"
+    "portfinder": "^1.0.28",
+    "semver": "^7.3.2",
+    "xterm": "^4.13.0"
   }
 }

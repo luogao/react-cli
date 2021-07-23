@@ -28,7 +28,7 @@ export default function Footer() {
   }, [location]);
 
   function renderThemeIcon() {
-    return darkTheme ? <LightIcon onClick={changeTheme} /> : <DarkIcon onClick={changeTheme} />;
+    return darkTheme ? <LightIcon /> : <DarkIcon />;
   }
 
   function handleClick() {
@@ -61,9 +61,11 @@ export default function Footer() {
           <span>🌠 {`Ready on http://localhost: ${process.env.DEV_CLIENT_PORT ?? 8080}`}</span>
         </div>
         <div className={css.rightGroup}>
-          <div className={css.icon}>{renderThemeIcon()}</div>
-          <div className={css.icon}>
-            <TranlateIcon onClick={changeLocale} />
+          <div onClick={changeTheme} className={css.icon}>
+            {renderThemeIcon()}
+          </div>
+          <div className={css.icon} onClick={changeLocale}>
+            <TranlateIcon />
           </div>
         </div>
       </div>
