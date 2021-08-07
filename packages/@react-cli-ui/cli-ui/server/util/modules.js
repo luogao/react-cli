@@ -1,7 +1,8 @@
-const path = require('path')
-const Module = require('module')
+const path = require('path');
+const fs = require('fs');
+const Module = require('module');
 
-const semver = require('semver')
+const semver = require('semver');
 
 /**
  * https://github.com/benmosher/eslint-plugin-import/pull/1591
@@ -10,55 +11,67 @@ const semver = require('semver')
  * Use `Module.createRequire` if available (added in Node v12.2.0)
  */
 // eslint-disable-next-line node/no-deprecated-api
-const createRequire = Module.createRequire || Module.createRequireFromPath || function (filename) {
-  const mod = new Module(filename, null)
-  mod.filename = filename
-  mod.paths = Module._nodeModulePaths(path.dirname(filename))
+const createRequire =
+  Module.createRequire ||
+  Module.createRequireFromPath ||
+  function (filename) {
+    const mod = new Module(filename, null);
+    mod.filename = filename;
+    mod.paths = Module._nodeModulePaths(path.dirname(filename));
 
-  mod._compile('module.exports = require;', filename)
+    mod._compile('module.exports = require;', filename);
 
-  return mod.exports
-}
+    return mod.exports;
+  };
 
-function resolveFallback (request, options) {
-  const isMain = false
-  const fakeParent = new Module('', null)
+function resolveFallback(request, options) {
+  const isMain = false;
+  const fakeParent = new Module('', null);
 
-  const paths = []
+  const paths = [];
 
   for (let i = 0; i < options.paths.length; i++) {
-    const p = options.paths[i]
-    fakeParent.paths = Module._nodeModulePaths(p)
-    const lookupPaths = Module._resolveLookupPaths(request, fakeParent, true)
+    const p = options.paths[i];
+    fakeParent.paths = Module._nodeModulePaths(p);
+    const lookupPaths = Module._resolveLookupPaths(request, fakeParent, true);
 
-    if (!paths.includes(p)) paths.push(p)
+    if (!paths.includes(p)) paths.push(p);
 
     for (let j = 0; j < lookupPaths.length; j++) {
-      if (!paths.includes(lookupPaths[j])) paths.push(lookupPaths[j])
+      if (!paths.includes(lookupPaths[j])) paths.push(lookupPaths[j]);
     }
   }
 
-  const filename = Module._findPath(request, paths, isMain)
+  const filename = Module._findPath(request, paths, isMain);
   if (!filename) {
-    const err = new Error(`Cannot find module '${request}'`)
-    err.code = 'MODULE_NOT_FOUND'
-    throw err
+    const err = new Error(`Cannot find module '${request}'`);
+    err.code = 'MODULE_NOT_FOUND';
+    throw err;
   }
-  return filename
+  return filename;
 }
 
-const resolve = semver.satisfies(process.version, '>=10.0.0')
-  ? require.resolve
-  : resolveFallback
+const resolve = semver.satisfies(process.version, '>=10.0.0') ? require.resolve : resolveFallback;
 
+/**
+ *
+ * @param {string} request 依赖的路径
+ * @param {string} context 当前项目路径
+ * @returns
+ */
 exports.resolveModule = function (request, context) {
-  let resolvedPath
+  let resolvedPath = '';
+  if (!fs.existsSync(path.join(context, 'node_modules', request.replace('/package.json')))) {
+    return resolvedPath;
+  }
   try {
     try {
-      resolvedPath = createRequire(path.resolve(context, 'package.json')).resolve(request)
+      console.log("path.resolve(context, 'package.json')", path.resolve(context, 'package.json'));
+      resolvedPath = createRequire(path.resolve(context, 'package.json')).resolve(request);
     } catch (e) {
-      resolvedPath = resolve(request, { paths: [context] })
+      console.log(e);
+      resolvedPath = resolve(request, { paths: [context] });
     }
   } catch (e) {}
-  return resolvedPath
-}
+  return resolvedPath;
+};

@@ -1,19 +1,19 @@
 import { createModel } from '@rematch/core'
-import { ProjectType } from 'types/project'
+import { TaskItemType } from 'types/task'
 import { RootModel } from './index'
 
-export type WorkSpaceState = {
-  currentProject: ProjectType | null
+export type ProjectTaskListState = {
+  list: TaskItemType[]
 }
 
-const defaultState: WorkSpaceState = {
-  currentProject: null
+const defaultState: ProjectTaskListState = {
+  list: []
 }
 
-export const workspace = createModel<RootModel>()({
+export const projectTaskList = createModel<RootModel>()({
   state: defaultState, // initial state
   reducers: {
-    setState (state, payload: Partial<WorkSpaceState>) {
+    setState (state, payload: Partial<ProjectTaskListState>) {
       return { ...state, ...payload }
     }
   }

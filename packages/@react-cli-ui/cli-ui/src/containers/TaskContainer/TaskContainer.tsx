@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useContext, useMemo, useRef, FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useRouteMatch } from 'react-router-dom';
 import cn from 'classnames';
@@ -14,13 +14,16 @@ import { v4 as uuid } from 'uuid';
 import { TaskItem } from './types';
 
 const tooltipId = uuid();
-export default function TaskContainer() {
+
+type Props = {};
+
+const TaskContainer: FC<Props> = () => {
   const match = useRouteMatch<{ taskName?: string }>();
   const currentTaskName = match.params.taskName;
   const { t } = useTranslation('dashboard');
   const { locale, activeTab } = useTaskContainer();
   const { socket, darkTheme } = useContext(SettingsContext);
-  const taskTerminal = useRef<TaskTerminal>();
+  const taskTerminal = useRef<typeof TaskTerminal>();
 
   // State
   const [tasks, setTask] = useState<any[]>([]);
@@ -34,7 +37,7 @@ export default function TaskContainer() {
     });
 
     socket.on('tasks', (res: any) => {
-      console.log({res})
+      console.log({ res });
       const list = res.data;
       setTask(list);
     });
@@ -118,4 +121,6 @@ export default function TaskContainer() {
       />
     </>
   );
-}
+};
+
+export default TaskContainer;

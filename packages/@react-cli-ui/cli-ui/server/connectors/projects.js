@@ -216,11 +216,10 @@ class ProjectApi extends StaticMethods {
    */
   importProject(pathProject) {
     const pathProjectUrl = `/${pathProject.join('/')}`;
-    if (!fs.existsSync(path.join(pathProjectUrl, 'node_modules'))) {
+    if (!fs.existsSync(path.join(pathProjectUrl, 'package.json'))) {
       this.client.emit('erro-import-project', {
-        title: 'NO_MODULES',
-        message:
-          'It seems the project is missing the "node_modules" folder. Please check you installed the dependencies before importing.',
+        title: '没有找到package.json',
+        message: '此项目没有package.json，无法导入',
       });
     } else {
       const project = {

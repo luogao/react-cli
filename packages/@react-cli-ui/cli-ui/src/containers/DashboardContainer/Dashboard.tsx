@@ -16,6 +16,7 @@ import StatsIcon from '@icons/dashboard-config.svg';
 import useDashboardContainer, { MenuItems } from './dashboardContainer.hook';
 
 import css from './style.module.less';
+import { store } from 'store';
 
 const TOOLTIP_ID = uuid();
 
@@ -51,7 +52,7 @@ export default function Dashboard() {
     });
 
     socket.on('config', (res: any) => {
-      console.log(res);
+      console.log({ config: res });
 
       setActive(res.data?.lastOpenProject || null);
     });
@@ -91,6 +92,7 @@ export default function Dashboard() {
       batch(() => {
         setTitle(currentProject ? currentProject.name : '');
         setFilterProjects(filterProjects);
+        store.dispatch.workspace.setState({ currentProject });
       });
     }
   }, [active, projects]);

@@ -1,1 +1,1 @@
-export { default } from './TaskTerminal.tsx'
+export { default } from './TaskTerminal'

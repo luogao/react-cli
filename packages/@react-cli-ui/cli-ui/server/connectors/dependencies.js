@@ -21,9 +21,7 @@ class DependenciesApi extends StaticMethods {
   }
 
   list () {
-    const activeProjectId = this.db.get('config.lastOpenProject').value()
-    const activeProject = this.db.get('projects').find({ id: activeProjectId }).value()
-    const filePath = `/${activeProject.path.join('/')}`
+    const filePath =  this.getActiveProjectFilePath()
     const pkg = this.readPackage(path.join(filePath))
 
     if (pkg) {

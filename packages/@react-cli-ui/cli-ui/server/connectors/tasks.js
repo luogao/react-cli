@@ -83,29 +83,14 @@ class TaskApi extends StaticMethods {
   }
 
   list() {
-    const activeProjectId = this.db.get('config.lastOpenProject').value();
-    const activeProject = this.db.get('projects').find({ id: activeProjectId }).value();
-
-    const filePath = `/${activeProject.path.join('/')}`;
-    const pkg = this.readPackage(path.join(filePath));
-
-    if (pkg.scripts) {
-      const scriptsKeys = Object.keys(pkg.scripts);
-      this.tasks = scriptsKeys.map((key) => {
-        return {
-          id: uuid(),
-          name: key,
-          command: pkg.scripts[key],
-          path: filePath,
-        };
-      });
-
+    this.tasks = this.updateAndGetProjectTaskList();
+    if (this.tasks.length > 0) {
+      const filePath = this.getActiveProjectFilePath();
       tasks.set(filePath, this.tasks);
-      console.log('this.tasks', this.tasks);
-      this.client.emit('tasks', {
-        data: this.tasks,
-      });
     }
+    this.client.emit('tasks', {
+      data: this.tasks,
+    });
   }
 
   async run(id = null, name) {
@@ -121,7 +106,7 @@ class TaskApi extends StaticMethods {
     const command = name.includes('start') ? `${name} --port=${port}` : name;
     const subprocess = runScripts(command, filePath);
 
-    this.db.set('tasks', []).write();
+    // this.db.set('tasks', []).write();
     this.db
       .get('tasks')
       .push({
@@ -139,7 +124,7 @@ class TaskApi extends StaticMethods {
           {
             type: 'stdout',
             text: queue,
-            id: taskDetail.id
+            id: taskDetail.id,
           },
           this.client,
         );

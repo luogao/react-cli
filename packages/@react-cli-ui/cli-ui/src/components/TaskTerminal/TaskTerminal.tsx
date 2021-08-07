@@ -63,7 +63,7 @@ const TaskTerminal = forwardRef((props, ref) => {
     termRef.current = new Terminal({
       theme: darkTheme ? darkThemeStyle : defaultThemeStyle,
     });
-    termRef.current.open(document.getElementById('xterm-container'));
+    termRef.current.open(document.getElementById('xterm-container') as HTMLElement);
     termRef.current.write('123');
   }, []);
 
@@ -83,7 +83,7 @@ const TaskTerminal = forwardRef((props, ref) => {
     setContent(log.text, log.type === 'stdout');
   }, []);
 
-  return <div id="xterm-container"></div>;
+  return <div id="xterm-container" className={css.xtermContainer} />;
 });
 
 export default TaskTerminal;
