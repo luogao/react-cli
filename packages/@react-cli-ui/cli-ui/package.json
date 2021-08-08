@@ -75,6 +75,7 @@
     "@types/socket.io-client": "^1.4.33",
     "@types/uuid": "^8.0.0",
     "autoprefixer": "^9.8.1",
+    "axios": "^0.21.1",
     "babel-loader": "^8.1.0",
     "babel-preset-react": "^6.24.1",
     "chalk": "^4.1.0",

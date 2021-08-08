@@ -211,6 +211,22 @@ class ProjectApi extends StaticMethods {
     });
   }
 
+  refresh() {
+    const filePath = this.getActiveProjectFilePath();
+    const isNodeModulesExist = fs.existsSync(path.join(filePath, 'node_modules'));
+    console.log(isNodeModulesExist);
+    const packageData = this.folder.readPackage(path.join(filePath));
+    this.db
+      .get('projects')
+      .find({ id: this.getActiveProjectId() })
+      .assign({ isAvailable: isNodeModulesExist })
+      .write();
+    this.client.emit('projectRefreshSuccess');
+    this.client.emit('notification', {
+      message: '当前项目信息已更新',
+    });
+  }
+
   /**
    * Import Project
    */
@@ -222,14 +238,15 @@ class ProjectApi extends StaticMethods {
         message: '此项目没有package.json，无法导入',
       });
     } else {
+      const isNodeModulesExist = fs.existsSync(path.join(pathProjectUrl, 'node_modules'));
       const project = {
         id: uuid(),
         path: pathProject,
         favorite: false,
         type: this.checkFramework(pathProjectUrl).type,
+        isAvailable: isNodeModulesExist,
       };
-      const packageData = this.folder.readPackage(path.join(pathProjectUrl));
-      project.name = packageData.name || path.parse(pathProjectUrl).name;
+      project.name = path.parse(pathProjectUrl).name;
       this.db.get('projects').push(project).write();
       this.open(project.id);
       this.client.emit('notification', {

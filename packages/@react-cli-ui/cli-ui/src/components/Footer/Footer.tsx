@@ -6,6 +6,7 @@ import { Routes } from 'router';
 import { CurrentPath, Logs } from '@components';
 import { SettingsContext } from '@context';
 import TranlateIcon from '@icons/translate.svg';
+import RefreshIcon from '@icons/refresh.svg';
 import DarkIcon from '@icons/dark-mode.svg';
 import LightIcon from '@icons/light-mode.svg';
 import HomeIcon from '@icons/home-filled.svg';
@@ -17,7 +18,8 @@ export default function Footer() {
   const location = useLocation();
   const [toggle, setToggle] = useState('');
   const [toggleLog, setToggleLog] = useState<boolean>(false);
-  const { darkTheme, changeTheme, changeLocale, selectedPath } = useContext(SettingsContext);
+  const { darkTheme, changeTheme, changeLocale, selectedPath, refreshProject } =
+    useContext(SettingsContext);
   // theme
   const styles = cn(css.footer, {
     [css.dark]: darkTheme,
@@ -61,6 +63,11 @@ export default function Footer() {
           <span>🌠 {`Ready on http://localhost: ${process.env.DEV_CLIENT_PORT ?? 8080}`}</span>
         </div>
         <div className={css.rightGroup}>
+          {!isProjectPath && (
+            <div onClick={refreshProject} className={css.icon}>
+              <RefreshIcon />
+            </div>
+          )}
           <div onClick={changeTheme} className={css.icon}>
             {renderThemeIcon()}
           </div>

@@ -17,28 +17,38 @@ import useDashboardContainer, { MenuItems } from './dashboardContainer.hook';
 
 import css from './style.module.less';
 import { store } from 'store';
+import { ProjectType } from 'types/project';
+import { NotifyItemType } from 'types/notify';
+import { CurrentRunningTaskType } from 'types/task';
 
 const TOOLTIP_ID = uuid();
 
-export type Project = {
-  id: string;
-  manager: string;
-  openDate: number;
-  favorite: boolean;
-  preset: string;
-  name: string;
-  path: string[];
-  type: string;
-};
+// export type Project = {
+//   id: string;
+//   manager: string;
+//   openDate: number;
+//   favorite: boolean;
+//   preset: string;
+//   name: string;
+//   path: string[];
+//   type: string;
+// };
 
 export default function Dashboard() {
   const { t } = useTranslation('dashboard');
   const { locale, activeTab } = useDashboardContainer();
   const notification = useNotification();
-  const { socket, selectedPath, changeSelectedPath } = useContext(SettingsContext);
+  const {
+    socket,
+    selectedPath,
+    changeSelectedPath,
+    addNotify,
+    clearNotify,
+    setCurrentRunningTasks,
+  } = useContext(SettingsContext);
 
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [filterProjects, setFilterProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<ProjectType[]>([]);
+  const [filterProjects, setFilterProjects] = useState<ProjectType[]>([]);
   const [active, setActive] = useState<string>('');
   const [title, setTitle] = useState<string>('');
 
@@ -49,6 +59,10 @@ export default function Dashboard() {
 
     socket.send({
       type: 'GET_PROJECTS',
+    });
+
+    socket.send({
+      type: 'GET_CURRENT_RUNNING_TASKS',
     });
 
     socket.on('config', (res: any) => {
@@ -69,10 +83,27 @@ export default function Dashboard() {
       });
     });
 
+    socket.on('projectRefreshSuccess', () => {
+      console.log('projectRefreshSuccess');
+      socket.send({
+        type: 'GET_CONFIG',
+      });
+      socket.send({
+        type: 'GET_PROJECTS',
+      });
+    });
+
+    socket.on('currenRunningTasksUpdate', (res: { data: CurrentRunningTaskType[] }) => {
+      console.log({ 'res.data': res.data });
+      setCurrentRunningTasks(res.data);
+    });
+
     return () => {
       socket.off('config');
       socket.off('projects');
       socket.off('erro');
+      socket.off('projectRefreshSuccess');
+      socket.off('currenRunningTasksUpdate');
     };
   }, []);
 
@@ -81,11 +112,12 @@ export default function Dashboard() {
       console.log({ projects });
       console.log({ active });
 
-      const currentProject: any = !!projects.length && projects.find((p) => p.id === active);
-      console.log({ currentProject });
+      const currentProject: ProjectType | null = (!!projects.length &&
+        projects.find((p) => p.id === active)) as ProjectType | null;
 
-      const filterFavorite = (project: Project) => project.favorite === true;
-      const filterName = (project: Project) => project.name !== currentProject.name;
+      const filterFavorite = (project: ProjectType) => project.favorite === true;
+      const filterName = (project: ProjectType) =>
+        currentProject && project.name !== currentProject.name;
       const filterProjects = projects.length
         ? [...projects].filter(filterName).filter(filterFavorite)
         : [];
@@ -93,6 +125,12 @@ export default function Dashboard() {
         setTitle(currentProject ? currentProject.name : '');
         setFilterProjects(filterProjects);
         store.dispatch.workspace.setState({ currentProject });
+        !currentProject?.isAvailable
+          ? addNotify({
+              type: NotifyItemType.warn,
+              message: '当前项目没有安装node_modules 暂不可用',
+            })
+          : clearNotify();
       });
     }
   }, [active, projects]);

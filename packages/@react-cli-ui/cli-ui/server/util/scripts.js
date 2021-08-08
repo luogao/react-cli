@@ -1,8 +1,9 @@
 const execa = require('execa');
 
 // npm scripts
-function runScripts(name, pathProject) {
-  return execa.command(`yarn ${name}`, {
+function runScripts(command, pathProject) {
+  console.log({ command, pathProject });
+  return execa.command(`yarn ${command}`, {
     shell: true,
     cwd: pathProject,
     stdio: ['inherit', 'pipe', 'pipe'],

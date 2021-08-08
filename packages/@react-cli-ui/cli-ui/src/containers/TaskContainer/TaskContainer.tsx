@@ -22,11 +22,12 @@ const TaskContainer: FC<Props> = () => {
   const currentTaskName = match.params.taskName;
   const { t } = useTranslation('dashboard');
   const { locale, activeTab } = useTaskContainer();
-  const { socket, darkTheme } = useContext(SettingsContext);
+  const { socket, darkTheme, currentRunningTasks } = useContext(SettingsContext);
   const taskTerminal = useRef<typeof TaskTerminal>();
-
+  const [tasks, setTask] = useState<TaskItem[]>([]);
+  const taskDetail = tasks.find((t) => t.name === currentTaskName);
+  const currentRunningTask = currentRunningTasks.find((t) => t.id === taskDetail?.id);
   // State
-  const [tasks, setTask] = useState<any[]>([]);
   const styles = cn(css.wrapper, {
     [css.dark]: darkTheme,
   });
@@ -34,6 +35,10 @@ const TaskContainer: FC<Props> = () => {
   useEffect(() => {
     socket.send({
       type: 'GET_LIST_TASKS',
+    });
+
+    socket.on('taskStartSuccess', (res: any) => {
+      console.log({ taskStartSuccess: res });
     });
 
     socket.on('tasks', (res: any) => {
@@ -61,7 +66,7 @@ const TaskContainer: FC<Props> = () => {
               <NavLink exact={true} to={`/tasks/${name}`} activeClassName={css.active}>
                 <div className={css.taskElement}>
                   <span className={css.name}>{name}</span>
-                  <span className={css.value}> {command} </span>
+                  <span className={css.value}>{command}</span>
                 </div>
               </NavLink>
             </div>
@@ -82,19 +87,41 @@ const TaskContainer: FC<Props> = () => {
   }
 
   function handleRunTask() {
-    console.log({ currentTaskName });
-    socket.send({
-      type: 'RUN_TASK',
-      name: currentTaskName,
-    });
+    if (taskDetail) {
+      console.log(taskDetail);
+      socket.send({
+        type: 'RUN_TASK',
+        id: taskDetail.id,
+        name: currentTaskName,
+      });
+    }
+  }
+  function stopTask() {
+    if (taskDetail && currentRunningTask) {
+      console.log(currentRunningTask);
+      socket.send({
+        type: 'STOP_TASK',
+        id: taskDetail.id,
+        name: currentTaskName,
+        runningTaskPid: currentRunningTask.pid,
+      });
+    }
   }
 
   function renderTaskControl() {
-    return (
-      <div className={css.taskControlWrapper}>
-        <button onClick={handleRunTask}>运行</button>
-      </div>
-    );
+    if (!currentRunningTask) {
+      return (
+        <div className={css.taskControlWrapper}>
+          <button onClick={handleRunTask}>运行</button>
+        </div>
+      );
+    } else {
+      return (
+        <div className={css.taskControlWrapper}>
+          <button onClick={stopTask}>停止</button>
+        </div>
+      );
+    }
   }
 
   function renderTaskContent() {

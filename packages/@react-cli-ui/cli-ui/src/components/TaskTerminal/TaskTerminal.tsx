@@ -64,7 +64,6 @@ const TaskTerminal = forwardRef((props, ref) => {
       theme: darkTheme ? darkThemeStyle : defaultThemeStyle,
     });
     termRef.current.open(document.getElementById('xterm-container') as HTMLElement);
-    termRef.current.write('123');
   }, []);
 
   const setContent = useCallback((value, ln = true) => {

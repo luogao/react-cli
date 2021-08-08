@@ -1,7 +1,7 @@
 import { DashboardContainer } from 'containers';
 import { isEqual } from 'lodash';
 import React from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 import css from './style.module.less';
 type Props = {};

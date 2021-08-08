@@ -16,10 +16,10 @@ export const workspace = createModel<RootModel>()({
     setState (state, payload: Partial<WorkSpaceState>) {
       return { ...state, ...payload }
     }
-  }
-  // effects: (dispatch) => ({
-  //   async setCurrentProject (id: string) {
-
-  //   },
-  // }),
+  },
+  effects: (dispatch) => ({
+    async checkProjectAvailable (id: string) {
+      
+    },
+  }),
 })

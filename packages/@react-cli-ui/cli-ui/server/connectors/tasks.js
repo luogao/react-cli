@@ -4,6 +4,7 @@ const { v4: uuid } = require('uuid');
 const path = require('path');
 const { notify } = require('../util/notification');
 const { runScripts } = require('../util/scripts');
+const { TASK_STATUS } = require('../../shared');
 
 const MAX_LOGS = 2000;
 const tasks = new Map();
@@ -80,6 +81,22 @@ class TaskApi extends StaticMethods {
     this.tasks = [];
     this.childProcess = {};
     this.logs = logs;
+    this.initRunningTask(); // 初始化的时候通知客户端，当前运行的任务
+  }
+
+  noticeCurrenRunningTasks() {
+    this.client.emit('currenRunningTasksUpdate', {
+      data: this.currentRunningTasks,
+    });
+  }
+
+  initRunningTask() {
+    console.log('🥳初始化的时候通知客户端，当前运行的任务');
+    this.noticeCurrenRunningTasks();
+  }
+
+  getCurrentRunningTasks() {
+    this.noticeCurrenRunningTasks();
   }
 
   list() {
@@ -93,28 +110,29 @@ class TaskApi extends StaticMethods {
     });
   }
 
-  async run(id = null, name) {
-    const activeProjectId = this.db.get('config.lastOpenProject').value();
-    const activeProject = this.db.get('projects').find({ id: activeProjectId }).value();
+  async run(id = null, taskName) {
+    const activeProjectId = this.getActiveProjectId();
+    const activeProject = this.getActiveProject();
 
-    const filePath = `/${activeProject.path.join('/')}`;
-    const taskDetail = tasks.get(filePath).find((task) => task.id === id);
+    const filePath = this.getActiveProjectFilePath();
+    const taskDetail = activeProject.tasks.find((task) => task.id === id);
     console.log({ taskDetail });
-    console.log({ activeProject });
     console.log({ filePath });
-    const port = await portfinder.getPortPromise();
-    const command = name.includes('start') ? `${name} --port=${port}` : name;
+    const taskPort = await portfinder.getPortPromise();
+    const command = taskName === 'start' ? `${taskName} --port=${taskPort}` : taskName;
+    console.log({ command, taskPort });
     const subprocess = runScripts(command, filePath);
+    const pid = subprocess.pid;
 
-    // this.db.set('tasks', []).write();
     this.db
       .get('tasks')
       .push({
         projectId: activeProjectId,
-        taskName: name,
-        pid: subprocess.pid.toString(),
-        taskPort: port,
+        taskName,
+        pid,
+        taskPort,
         id,
+        status: TASK_STATUS.running,
       })
       .write();
 
@@ -131,38 +149,47 @@ class TaskApi extends StaticMethods {
       });
 
       subprocess.stdout.on('data', (buffer) => {
+        console.log(buffer.toString());
         outPipe.add(buffer.toString());
       });
 
       notify({
         title: 'Script run',
-        message: `Script ${name} successfully`,
+        message: `Script ${taskName} successfully`,
         icon: 'done',
       });
-      this.client.emit('taskStartSuccess', {
-        taskPort,
-        taskName,
-        pid,
-      });
+      // this.client.emit('taskStartSuccess', {
+      //   taskPort,
+      //   taskName,
+      //   pid,
+      // });
+      this.client.emit('currenRunningTasksUpdate', { data: this.currentRunningTasks });
     } catch (error) {
       console.log({ error });
       this.client.emit('erro', {
         title: 'Failure',
-        message: `script run ${name} error`,
+        message: `script run ${taskName} error`,
       });
     }
   }
 
-  stop(id = null) {
-    const activeProjectId = id !== null ? id : this.db.get('config.lastOpenProject').value();
-    const child = this.db.get('tasks').find({ projectId: activeProjectId }).value();
-    require('child_process').exec(`kill -9 ${child.pid}`, (err) => {
+  stop(id = null, pid) {
+    console.log({ id, pid });
+    const task = this.db.get('tasks').find({ id }).value();
+    require('child_process').exec(`kill -9 ${pid}`, (err) => {
       if (err) {
         console.log('err', err);
+        notify({
+          title: '脚本停止失败',
+          message: `停止 ${task.name} 脚本失败 `,
+          icon: 'done',
+        });
       } else {
+        this.db.get('tasks').remove({ id }).write();
+        this.noticeCurrenRunningTasks();
         notify({
           title: 'Script stop',
-          message: `Script ${child.pid} successfully`,
+          message: `已停止运行脚本 ${task.name} `,
           icon: 'done',
         });
       }

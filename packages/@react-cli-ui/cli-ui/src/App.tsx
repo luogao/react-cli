@@ -18,7 +18,7 @@ export default function App() {
   const styles = cn(css.appContainer, {
     [css.dark]: settings.darkTheme,
   });
-
+  console.log(settings.socketReady);
   return (
     <Provider store={store}>
       <I18nextProvider i18n={i18n}>

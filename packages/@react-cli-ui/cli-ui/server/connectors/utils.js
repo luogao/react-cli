@@ -15,6 +15,10 @@ class StaticMethods {
     return this.db.get('config.hardDrive', '').value();
   }
 
+  get currentRunningTasks () {
+    return this.db.get('tasks').value()
+  }
+
   /**
    * 创建文件夹信息对象
    * @param {string} pathFolder - запрашиваемый путь

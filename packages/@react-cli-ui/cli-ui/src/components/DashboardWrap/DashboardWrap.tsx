@@ -20,7 +20,7 @@ export default function DashboardWrap({
   cssStyle,
   fullContent,
 }: DashboardProps) {
-  const { darkTheme } = useContext(SettingsContext);
+  const { darkTheme, notify } = useContext(SettingsContext);
   const styles = cn(css.wrapper, {
     [css.dark]: darkTheme,
   });
@@ -31,6 +31,7 @@ export default function DashboardWrap({
         <div className={css.title}>{title}</div>
         <div className={css.rightGroup}>{btn}</div>
       </div>
+      {notify && <div className={css.noticeWrapper}>{notify.message}</div>}
       <div className={css.content} style={{ padding: fullContent ? 0 : 35 }}>
         {children}
       </div>
