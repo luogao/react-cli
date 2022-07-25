@@ -15,7 +15,7 @@ class StaticMethods {
     return this.db.get('config.hardDrive', '').value();
   }
 
-  get currentRunningTasks () {
+  get currentRunningTasks() {
     return this.db.get('tasks').value()
   }
 
@@ -98,7 +98,7 @@ class StaticMethods {
       this.drives = subprocess.stdout
         .toString('utf8')
         .match(/[A-Z]:/g)
-        .map((drive) => `${drive}/`);
+        .map((drive) => `${ drive }/`);
     }
 
     if (!this.hardDrive) {
@@ -121,7 +121,7 @@ class StaticMethods {
 
   getActiveProjectFilePath() {
     const activeProject = this.getActiveProject();
-    const filePath = activeProject ? `/${activeProject.path.join('/')}` : '';
+    const filePath = activeProject ? `/${ activeProject.path.join('/') }` : '';
     return filePath;
   }
 
@@ -137,13 +137,13 @@ class StaticMethods {
       const scriptsKeys = Object.keys(pkg.scripts);
       try {
         existTasks = this.db.get('projects').find({ id: activeProject.id }).get('tasks').value();
-      } catch (err) {}
+      } catch (err) { }
 
       for (let index = 0; index < scriptsKeys.length; index++) {
         const key = scriptsKeys[index];
-        const esist = existTasks && existTasks.length > 0 && existTasks.find((t) => t.name === key);
-        if (esist) {
-          tasks.push(esist);
+        const exist = existTasks && existTasks.length > 0 && existTasks.find((t) => t.name === key);
+        if (exist) {
+          tasks.push(exist);
         } else {
           tasks.push({
             id: uuid(),

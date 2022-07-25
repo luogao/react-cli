@@ -27,7 +27,7 @@ export default function KillPort () {
         message: res.message
       })
     })
-    socket.on('kill-erro', (error: any) => {
+    socket.on('kill-error', (error: any) => {
       notification.error({
         title: error.title,
         message: error.message
@@ -35,7 +35,7 @@ export default function KillPort () {
     })
     return () => {
       socket.off('kill-port')
-      socket.off('kill-erro')
+      socket.off('kill-error')
     }
   }, [])
 

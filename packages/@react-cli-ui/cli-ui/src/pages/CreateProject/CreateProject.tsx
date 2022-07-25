@@ -54,7 +54,7 @@ export default function CreateProject () {
       setLoading(false)
       history.push(Routes.DASHBOARD)
     })
-    socket.on('erro', (error: any) => {
+    socket.on('error', (error: any) => {
       setLoading(false)
       notification.error({
         title: error.title,
@@ -64,7 +64,7 @@ export default function CreateProject () {
     return () => {
       socket.off('logging')
       socket.off('notification')
-      socket.off('erro')
+      socket.off('error')
     }
   }, [])
 

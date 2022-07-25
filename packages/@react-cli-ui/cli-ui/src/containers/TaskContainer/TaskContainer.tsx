@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useMemo, useRef, FC } from 'react';
+import React, { useState, useEffect, useContext, useMemo, useRef, FC, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useRouteMatch } from 'react-router-dom';
 import cn from 'classnames';
@@ -18,19 +18,34 @@ const tooltipId = uuid();
 type Props = {};
 
 const TaskContainer: FC<Props> = () => {
-  const match = useRouteMatch<{ taskName?: string }>();
-  const currentTaskName = match.params.taskName;
+  const match = useRouteMatch<{ taskId?: string }>();
+  const currentTaskId = match.params.taskId;
   const { t } = useTranslation('dashboard');
   const { locale, activeTab } = useTaskContainer();
   const { socket, darkTheme, currentRunningTasks } = useContext(SettingsContext);
   const taskTerminal = useRef<typeof TaskTerminal>();
   const [tasks, setTask] = useState<TaskItem[]>([]);
-  const taskDetail = tasks.find((t) => t.name === currentTaskName);
+  const taskDetail = tasks.find((t) => t.id === currentTaskId);
   const currentRunningTask = currentRunningTasks.find((t) => t.id === taskDetail?.id);
+
   // State
   const styles = cn(css.wrapper, {
     [css.dark]: darkTheme,
   });
+
+  const handleCurrentTaskMessageRecover = useCallback(
+    (msg: { type: string; text: string; id: string }[], taskId: string) => {
+      if (taskId === currentTaskId) {
+        console.log({ msg });
+        msg.forEach((m) => {
+          setTerminalLog(m);
+        });
+      } else {
+        clearTerminalLog();
+      }
+    },
+    [currentTaskId],
+  );
 
   useEffect(() => {
     socket.send({
@@ -41,6 +56,17 @@ const TaskContainer: FC<Props> = () => {
       console.log({ taskStartSuccess: res });
     });
 
+    socket.on(
+      'currentTaskMessageRecover',
+      ({
+        data: { msg, taskId },
+      }: {
+        data: { msg: { type: string; text: string; id: string }[]; taskId: string };
+      }) => {
+        handleCurrentTaskMessageRecover(msg, taskId);
+      },
+    );
+
     socket.on('tasks', (res: any) => {
       console.log({ res });
       const list = res.data;
@@ -48,14 +74,31 @@ const TaskContainer: FC<Props> = () => {
     });
 
     socket.on('taskLogAdd', ({ data }: { data: any }) => {
-      console.log(data);
-      taskTerminal.current && taskTerminal.current.addLog(data);
+      setTerminalLog(data);
     });
 
     return () => {
       socket.off('tasks');
+      socket.off('currentTaskMessageRecover');
     };
-  }, []);
+  }, [handleCurrentTaskMessageRecover]);
+
+  useEffect(() => {
+    if (currentTaskId && currentRunningTask && currentRunningTask.id === currentTaskId) {
+      console.log({ currentTaskId });
+      socket.send({ type: 'recoverTaskMessage', taskId: currentTaskId });
+    } else {
+      clearTerminalLog();
+    }
+  }, [currentTaskId, currentRunningTask]);
+
+  const setTerminalLog = (msg: any) => {
+    taskTerminal.current && taskTerminal.current.addLog(msg);
+  };
+
+  const clearTerminalLog = () => {
+    taskTerminal.current && taskTerminal.current.clear();
+  };
 
   const renderTaskItemList = useMemo(
     () => (
@@ -63,7 +106,7 @@ const TaskContainer: FC<Props> = () => {
         {tasks.map(({ id, command, name }: TaskItem) => {
           return (
             <div data-tip={command} key={id} data-for={tooltipId}>
-              <NavLink exact={true} to={`/tasks/${name}`} activeClassName={css.active}>
+              <NavLink exact={true} to={`/tasks/${id}`} activeClassName={css.active}>
                 <div className={css.taskElement}>
                   <span className={css.name}>{name}</span>
                   <span className={css.value}>{command}</span>
@@ -92,7 +135,7 @@ const TaskContainer: FC<Props> = () => {
       socket.send({
         type: 'RUN_TASK',
         id: taskDetail.id,
-        name: currentTaskName,
+        name: taskDetail?.name,
       });
     }
   }
@@ -102,7 +145,7 @@ const TaskContainer: FC<Props> = () => {
       socket.send({
         type: 'STOP_TASK',
         id: taskDetail.id,
-        name: currentTaskName,
+        name: taskDetail.name,
         runningTaskPid: currentRunningTask.pid,
       });
     }
@@ -125,7 +168,7 @@ const TaskContainer: FC<Props> = () => {
   }
 
   function renderTaskContent() {
-    if (!currentTaskName) return null;
+    if (!taskDetail?.name) return null;
     return (
       <div className={css.taskContentWrapper}>
         {renderTaskControl()}

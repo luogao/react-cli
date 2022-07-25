@@ -25,7 +25,7 @@ export default function Create () {
       history.push(Routes.PROJECT)
     })
 
-    socket.on('erro-import-project', (error: any) => {
+    socket.on('error-import-project', (error: any) => {
       console.log(error)
       notification.error({
         title: error.title,
@@ -34,7 +34,7 @@ export default function Create () {
     })
     return () => {
       socket.off('notification')
-      socket.off('erro-import-project')
+      socket.off('error-import-project')
     }
   }, [])
 

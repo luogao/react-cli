@@ -42,7 +42,7 @@ class FolderApi extends StaticMethods {
 
       fs.readdir(data.folder, (err, files) => {
         if (err) {
-          this.client.emit('erro', {
+          this.client.emit('error', {
             message: '文件系统错误',
             error: err
           })
@@ -71,7 +71,7 @@ class FolderApi extends StaticMethods {
         })
       })
     } catch (error) {
-      this.client.emit('erro', {
+      this.client.emit('error', {
         message: '出了点问题，请重试',
         error
       })
@@ -104,7 +104,7 @@ class FolderApi extends StaticMethods {
         })
       }
     } catch (error) {
-      this.client.emit('erro', {
+      this.client.emit('error', {
         message: '出了点问题，请重试',
         error
       })

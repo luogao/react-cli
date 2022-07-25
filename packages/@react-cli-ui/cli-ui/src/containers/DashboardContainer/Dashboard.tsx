@@ -75,7 +75,7 @@ export default function Dashboard() {
       setProjects(res.data);
     });
 
-    socket.on('erro', (error = { title: '未知错误', message: '请打开控制台查看' }) => {
+    socket.on('error', (error = { title: '未知错误', message: '请打开控制台查看' }) => {
       console.log({ error });
       notification.error({
         title: error.title || '',
@@ -93,7 +93,7 @@ export default function Dashboard() {
       });
     });
 
-    socket.on('currenRunningTasksUpdate', (res: { data: CurrentRunningTaskType[] }) => {
+    socket.on('currentRunningTasksUpdate', (res: { data: CurrentRunningTaskType[] }) => {
       console.log({ 'res.data': res.data });
       setCurrentRunningTasks(res.data);
     });
@@ -101,9 +101,9 @@ export default function Dashboard() {
     return () => {
       socket.off('config');
       socket.off('projects');
-      socket.off('erro');
+      socket.off('error');
       socket.off('projectRefreshSuccess');
-      socket.off('currenRunningTasksUpdate');
+      socket.off('currentRunningTasksUpdate');
     };
   }, []);
 

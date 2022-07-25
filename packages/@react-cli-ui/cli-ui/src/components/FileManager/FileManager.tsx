@@ -47,7 +47,7 @@ export default function FileManager () {
       setFavorites(res.data)
     })
 
-    socket.on('erro', (error: any) => {
+    socket.on('error', (error: any) => {
       batch(() => {
         setLoading(false)
         backFolder()
@@ -61,7 +61,7 @@ export default function FileManager () {
     return () => {
       socket.off('folders')
       socket.off('foldersFavorite')
-      socket.off('erro')
+      socket.off('error')
     }
   }, [])
 

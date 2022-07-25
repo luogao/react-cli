@@ -47,6 +47,7 @@ const TaskTerminal = forwardRef((props, ref) => {
 
   useImperativeHandle(ref, () => ({
     addLog,
+    clear,
   }));
 
   useEffect(() => {
@@ -80,6 +81,10 @@ const TaskTerminal = forwardRef((props, ref) => {
 
   const addLog = useCallback((log) => {
     setContent(log.text, log.type === 'stdout');
+  }, []);
+
+  const clear = useCallback(() => {
+    termRef.current && termRef.current.clear();
   }, []);
 
   return <div id="xterm-container" className={css.xtermContainer} />;

@@ -5,6 +5,7 @@ const path = require('path');
 const { notify } = require('../util/notification');
 const { runScripts } = require('../util/scripts');
 const { TASK_STATUS } = require('../../shared');
+const { TaskStore } = require('../models/TaskStore');
 
 const MAX_LOGS = 2000;
 const tasks = new Map();
@@ -85,7 +86,7 @@ class TaskApi extends StaticMethods {
   }
 
   noticeCurrenRunningTasks() {
-    this.client.emit('currenRunningTasksUpdate', {
+    this.client.emit('currentRunningTasksUpdate', {
       data: this.currentRunningTasks,
     });
   }
@@ -110,8 +111,21 @@ class TaskApi extends StaticMethods {
     });
   }
 
+
+  recoverTaskMessage = (id) => {
+    const task = TaskStore.getTask(id)
+    let message = []
+    if (task) {
+      console.log(task)
+      message = task.recoverMessage()
+    }
+    this.client.emit('currentTaskMessageRecover', { data: { msg: message, taskId: task.id } })
+  }
+
+
   async run(id = null, taskName) {
     const activeProjectId = this.getActiveProjectId();
+    console.log(activeProjectId)
     const activeProject = this.getActiveProject();
 
     const filePath = this.getActiveProjectFilePath();
@@ -119,10 +133,21 @@ class TaskApi extends StaticMethods {
     console.log({ taskDetail });
     console.log({ filePath });
     const taskPort = await portfinder.getPortPromise();
-    const command = taskName === 'start' ? `${taskName} --port=${taskPort}` : taskName;
+    const command = taskName === 'start' ? `${ taskName } --port=${ taskPort }` : taskName;
     console.log({ command, taskPort });
     const subprocess = runScripts(command, filePath);
     const pid = subprocess.pid;
+
+    const currentTask = TaskStore.addTask({
+      projectId: activeProjectId,
+      taskName,
+      pid,
+      taskPort,
+      id,
+      status: TASK_STATUS.running,
+    })
+
+
 
     this.db
       .get('tasks')
@@ -146,16 +171,21 @@ class TaskApi extends StaticMethods {
           },
           this.client,
         );
+        currentTask.onStdout({
+          type: 'stdout',
+          text: queue,
+          id: taskDetail.id,
+        })
       });
 
       subprocess.stdout.on('data', (buffer) => {
-        console.log(buffer.toString());
-        outPipe.add(buffer.toString());
+        const message = buffer.toString()
+        outPipe.add(message);
       });
 
       notify({
         title: 'Script run',
-        message: `Script ${taskName} successfully`,
+        message: `Script ${ taskName } successfully`,
         icon: 'done',
       });
       // this.client.emit('taskStartSuccess', {
@@ -163,12 +193,12 @@ class TaskApi extends StaticMethods {
       //   taskName,
       //   pid,
       // });
-      this.client.emit('currenRunningTasksUpdate', { data: this.currentRunningTasks });
+      this.client.emit('currentRunningTasksUpdate', { data: this.currentRunningTasks });
     } catch (error) {
       console.log({ error });
-      this.client.emit('erro', {
+      this.client.emit('error', {
         title: 'Failure',
-        message: `script run ${taskName} error`,
+        message: `script run ${ taskName } error`,
       });
     }
   }
@@ -176,12 +206,12 @@ class TaskApi extends StaticMethods {
   stop(id = null, pid) {
     console.log({ id, pid });
     const task = this.db.get('tasks').find({ id }).value();
-    require('child_process').exec(`kill -9 ${pid}`, (err) => {
+    require('child_process').exec(`kill -9 ${ pid }`, (err) => {
       if (err) {
         console.log('err', err);
         notify({
           title: '脚本停止失败',
-          message: `停止 ${task.name} 脚本失败 `,
+          message: `停止 ${ task.name } 脚本失败 `,
           icon: 'done',
         });
       } else {
@@ -189,7 +219,7 @@ class TaskApi extends StaticMethods {
         this.noticeCurrenRunningTasks();
         notify({
           title: 'Script stop',
-          message: `已停止运行脚本 ${task.name} `,
+          message: `已停止运行脚本 ${ task.name } `,
           icon: 'done',
         });
       }

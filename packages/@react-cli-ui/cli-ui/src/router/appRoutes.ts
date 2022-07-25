@@ -1,4 +1,4 @@
-import { AppContainer, ProjectContainer, DashboardContainer, TaskContainer } from 'containers'
+import { AppContainer, ProjectContainer, DashboardContainer, TaskContainer } from 'containers';
 import {
   Projects,
   SelectFolder,
@@ -6,7 +6,7 @@ import {
   PageNotFound,
   Dashboard,
   CreateProject,
-} from '@pages'
+} from '@pages';
 
 /** Url's основных страниц */
 export enum Routes {
@@ -19,65 +19,65 @@ export enum Routes {
   DASHBOARD_TASKS = '/tasks',
   DEPENDENCIES = '/dependencies',
   NOT_FOUND = '/404',
-  ASSET_MANAGEMENT = '/asset-management'
+  ASSET_MANAGEMENT = '/asset-management',
 }
 
 export interface RouteEntity {
   Component: React.FC<React.ReactNode>;
   paths: {
     root: string;
-    [ key: string ]: string | RouteEntity;
+    [key: string]: string | RouteEntity;
   };
   isRowDirection?: boolean;
   exact?: boolean;
 }
 
 type RoutesCollection = {
-  [ key: string ]: RouteEntity;
+  [key: string]: RouteEntity;
 };
 
 export const AppRoutes: RoutesCollection = {
   main: {
     paths: {
-      root: Routes.MAIN
+      root: Routes.MAIN,
     },
     exact: true,
-    Component: AppContainer
+    Component: AppContainer,
   },
   projects: {
     paths: {
       root: Routes.PROJECT,
       project: {
         paths: {
-          root: Routes.PROJECT
+          root: Routes.PROJECT,
         },
         exact: true,
-        Component: Projects
+        Component: Projects,
       },
       projectSelect: {
         paths: {
-          root: Routes.PROJECT_SELECT
+          root: Routes.PROJECT_SELECT,
         },
         exact: true,
-        Component: SelectFolder
+        Component: SelectFolder,
       },
       projectCreate: {
         paths: {
-          root: Routes.PROJECT_CREATE
+          root: Routes.PROJECT_CREATE,
         },
         exact: true,
-        Component: CreateProject
+        Component: CreateProject,
       },
       projectImport: {
         paths: {
-          root: Routes.PROJECT_IMPORT
+          root: Routes.PROJECT_IMPORT,
         },
         exact: true,
-        Component: SelectFolder
-      }
+        Component: SelectFolder,
+      },
     },
     exact: false,
-    Component: ProjectContainer
+    Component: ProjectContainer,
   },
   dashboard: {
     paths: {
@@ -89,11 +89,11 @@ export const AppRoutes: RoutesCollection = {
   },
   dashboardStats: {
     paths: {
-      root: Routes.DEPENDENCIES
+      root: Routes.DEPENDENCIES,
     },
     exact: true,
     isRowDirection: true,
-    Component: Dependencies
+    Component: Dependencies,
   },
   tasks: {
     paths: {
@@ -101,21 +101,21 @@ export const AppRoutes: RoutesCollection = {
     },
     exact: true,
     isRowDirection: true,
-    Component: TaskContainer
+    Component: TaskContainer,
   },
   tasksAction: {
     paths: {
-      root: `${Routes.DASHBOARD_TASKS}/:taskName`,
+      root: `${Routes.DASHBOARD_TASKS}/:taskId`,
     },
     exact: true,
     isRowDirection: true,
-    Component: TaskContainer
+    Component: TaskContainer,
   },
   notFound: {
     paths: {
-      root: '*'
+      root: '*',
     },
     exact: true,
-    Component: PageNotFound
-  }
-}
+    Component: PageNotFound,
+  },
+};

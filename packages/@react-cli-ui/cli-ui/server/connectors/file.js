@@ -20,7 +20,7 @@ class FileApi extends StaticMethods {
       process.env.EDITOR || 'code',
       (fileName, errorMsg) => {
         console.error(`Unable to open '${fileName}'`, errorMsg)
-        this.client.emit('erro', {
+        this.client.emit('error', {
           title: '文件系统错误',
           message: errorMsg
         })

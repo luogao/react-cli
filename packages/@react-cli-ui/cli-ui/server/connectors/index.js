@@ -40,6 +40,7 @@ class Api {
       dep,
       port,
       runningTaskPid,
+      taskId
     } = message;
     switch (type) {
       // Folders
@@ -149,6 +150,9 @@ class Api {
       case 'GET_CURRENT_RUNNING_TASKS':
         this.tasks.getCurrentRunningTasks();
         break;
+
+      case 'recoverTaskMessage':
+        this.tasks.recoverTaskMessage(taskId)
 
       // Config
       case 'GET_CONFIG':

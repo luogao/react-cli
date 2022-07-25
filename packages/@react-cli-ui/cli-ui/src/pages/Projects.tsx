@@ -83,7 +83,7 @@ export default function Projects () {
       setActive(res.data?.lastOpenProject || 1)
     })
 
-    socket.on('erro', (error: any) => {
+    socket.on('error', (error: any) => {
       setLoading(false)
       notification.error({
         title: error.title,
@@ -95,7 +95,7 @@ export default function Projects () {
       socket.off('projects')
       socket.off('config')
       socket.off('tasks')
-      socket.off('erro')
+      socket.off('error')
     }
   }, [])
 

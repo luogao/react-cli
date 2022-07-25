@@ -68,7 +68,7 @@ class ProjectApi extends StaticMethods {
         data: this.db.get('projects').value(),
       });
     } else {
-      this.client.emit('erro', {
+      this.client.emit('error', {
         message: '出了点问题，请重试',
       });
     }
@@ -133,7 +133,7 @@ class ProjectApi extends StaticMethods {
               });
           }
         } catch (error) {
-          this.client.emit('erro', {
+          this.client.emit('error', {
             title: 'Failure',
             message: `Project ${name} create error`,
             error,
@@ -146,7 +146,7 @@ class ProjectApi extends StaticMethods {
       }
 
       if (files) {
-        this.client.emit('erro', {
+        this.client.emit('error', {
           title: 'Ошибка создания проекта',
           message: `Директория ${name} - уже существует`,
         });
@@ -233,7 +233,7 @@ class ProjectApi extends StaticMethods {
   importProject(pathProject) {
     const pathProjectUrl = `/${pathProject.join('/')}`;
     if (!fs.existsSync(path.join(pathProjectUrl, 'package.json'))) {
-      this.client.emit('erro-import-project', {
+      this.client.emit('error-import-project', {
         title: '没有找到package.json',
         message: '此项目没有package.json，无法导入',
       });

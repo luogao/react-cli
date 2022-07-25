@@ -112,7 +112,7 @@ class DependenciesApi extends StaticMethods {
         })
       }
     } catch (error) {
-      this.client.emit('erro', {
+      this.client.emit('error', {
         title: 'Failure',
         message: `npm install ${name} error`,
         error
@@ -157,7 +157,7 @@ class DependenciesApi extends StaticMethods {
         })
       }
     } catch (error) {
-      this.client.emit('erro', {
+      this.client.emit('error', {
         title: 'Failure',
         message: `npm uninstall ${name} error`,
         error

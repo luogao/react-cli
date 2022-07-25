@@ -53,7 +53,7 @@ export default function Dependencies () {
       })
     })
 
-    socket.on('erro', (error: any) => {
+    socket.on('error', (error: any) => {
       setLoading(false)
       notification.error({
         title: error.title,
@@ -64,7 +64,7 @@ export default function Dependencies () {
       socket.off('dependencies')
       socket.off('logging')
       socket.off('notification')
-      socket.off('erro')
+      socket.off('error')
     }
   }, [])
 

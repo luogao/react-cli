@@ -10,7 +10,8 @@
     "version": "node scripts/genChangelog.js",
     "update:version": "lerna version --no-push",
     "new-version": "lerna version --conventional-commits --yes",
-    "dev": "lerna run dev --stream"
+    "dev": "lerna run dev --stream",
+    "add": "lerna add "
   },
   "repository": {
     "type": "git",
@@ -46,5 +47,8 @@
     "semver": "^7.3.2",
     "typescript": "^3.9.5",
     "webpack": "^4.43.0"
+  },
+  "dependencies": {
+    "node-notifier": "10.0.0"
   }
 }

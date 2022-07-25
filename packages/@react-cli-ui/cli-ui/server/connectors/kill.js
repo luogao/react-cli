@@ -11,7 +11,7 @@ class KillApi {
    */
   port (port) {
     if (port === 'undefined' || port === '') {
-      this.client.emit('kill-erro', {
+      this.client.emit('kill-error', {
         title: '❌ Has\'t port to kill',
         message: 'Couldn\'t kill process'
       })
@@ -19,7 +19,7 @@ class KillApi {
       require('child_process').exec(`kill -9 $(lsof -t -i:${port} -sTCP:LISTEN)`, (err) => {
         if (err) {
           console.log('err', err)
-          this.client.emit('kill-erro', {
+          this.client.emit('kill-error', {
             title: `❌ Port: ${port}`,
             message: 'Couldn\'t kill process'
           })
